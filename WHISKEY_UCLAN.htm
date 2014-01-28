@@ -1,0 +1,93 @@
+<html>
+  <head>
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script type="text/javascript">
+      google.load('visualization', '1', {'packages': ['table', 'map', 'corechart']});
+      google.setOnLoadCallback(initialize);
+
+      function initialize() {
+        // The URL of the spreadsheet to source data from.
+        var query = new google.visualization.Query(
+         'https://docs.google.com/spreadsheet/ccc?key=0AiTm8YTrwNuodGdIcjBScjgyQ1gxT2M2ZWlnLV9JYnc&usp=drive_web#gid=0');
+        query.send(draw);
+      }
+
+      function draw(response) {
+        if (response.isError()) {
+          alert('Error in query');
+        }
+
+        var ticketsData = response.getDataTable();
+        var chart = new google.visualization.ColumnChart(
+            document.getElementById('chart_div'));
+        chart.draw(ticketsData, { 'legend': 'top',
+             'vAxis': {'title': 'Number of Bottles'}});
+
+        var geoData = google.visualization.arrayToDataTable([
+          ['Lat', 'Lon', 'Country', 'Malt', 'Blended',   'Bottles'],
+		  [48.850017, 2.370300, 'France',6060178,23562281,   true],  
+	  [40.729499, -74.036865, 'USA',4871461,24236117,   true],	  
+   [51.492101, -0.104370, 'Uk',   3095500,  22139700,   true],
+     [1.352083, 103.819836,'Singapore',1601947,16004368,   true],
+     [40.387839, -3.685913, 'Spain',1246933,13951999,   true],
+     [20.593684, 78.962880, 'India ',821689,1361388,   true],
+	   [-30.559482, 22.937506, 'South Africa',2009215,11362324,   true],
+	   [51.165691, 10.451526, 'Germany ',2908284,8839233,   true],
+	    [-14.235004,-51.925280, 'Brazil ',1764379,9415203,   true],
+	   [23.634501, -102.552784,'Mexico ',112248,4911074,   true],
+
+
+   
+   ]);
+        
+      
+
+        
+
+        var geoView = new google.visualization.DataView(geoData);
+        geoView.setColumns([0, 1]);
+
+        var table =
+            new google.visualization.Table(document.getElementById('table_div'));
+        table.draw(geoData, {showRowNumber: false});
+
+        var map =
+            new google.visualization.Map(document.getElementById('map_div'));
+        map.draw(geoView, {showTip: false});
+
+        // Set a 'select' event listener for the table.
+        // When the table is selected, we set the selection on the map.
+        google.visualization.events.addListener(table, 'select',
+            function() {
+              map.setSelection(table.getSelection());
+            });
+
+        // Set a 'select' event listener for the map.
+        // When the map is selected, we set the selection on the table.
+        google.visualization.events.addListener(map, 'select',
+            function() {
+              table.setSelection(map.getSelection());
+            });
+      }
+    </script>
+  </head>
+
+  <body>
+    <table align="center">
+      <tr valign="top">
+        <td style="width: 50%;">
+          <div id="map_div" style="width: 600px; height: 300;"></div>
+        </td>
+        <td style="width: 50%;">
+          <div id="table_div" style="width:500px; height: 300;"  ></div>
+        </td>
+      </tr>
+      <tr>
+        <td colSpan=2>
+          <div id="chart_div" style="align: center; width: 1000px; height: 500px;"></div>
+        </td>
+      </tr>
+    </table>
+
+  </body>
+</html>
